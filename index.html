@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Calculator</title>  
+    <link rel="shortcut icon" href="img/logo.jpeg" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #d8e8e8;
+            --card-light: #faf8f6;
+            --card-dark: #1a3a3a;
+            --accent-yellow: #d8db2f;
+            --text-dark: #1a3a3a;
+            --text-light: #6b7c7c;
+            --text-white: #e8f4f4;
+            --border-color: #d0e0e0;
+            --input-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            max-width: 1100px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: var(--card-light);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section {
+            padding: 48px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            color: var(--text-dark);
+        }
+
+        .form-group {
+            margin-bottom: 32px;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .currency-symbol,
+        .unit-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .currency-symbol {
+            left: 20px;
+        }
+
+        .unit-label {
+            right: 20px;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 100%;
+            padding: 16px 20px;
+            padding-left: 50px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-dark);
+            background: var(--input-bg);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 0 3px rgba(216, 219, 47, 0.1);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+        }
+
+        .radio-option:hover {
+            border-color: var(--accent-yellow);
+            background: rgba(216, 219, 47, 0.05);
+        }
+
+        input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 16px;
+            cursor: pointer;
+            accent-color: var(--text-dark);
+        }
+
+        .radio-option label {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .radio-option.selected {
+            border-color: var(--text-dark);
+            background: rgba(26, 58, 58, 0.05);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent-yellow);
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(216, 219, 47, 0.3);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(216, 219, 47, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .calculate-btn::before {
+            content: '🧮';
+            font-size: 20px;
+        }
+
+        .results-section {
+            background: var(--card-dark);
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .results-empty {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .illustration {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .results-empty h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 12px;
+        }
+
+        .results-empty p {
+            font-size: 16px;
+            color: var(--text-light);
+            line-height: 1.6;
+            max-width: 300px;
+        }
+
+        .results-content {
+            display: none;
+            width: 100%;
+            animation: slideIn 0.5s ease;
+        }
+
+        .results-content.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .results-header {
+            margin-bottom: 32px;
+        }
+
+        .results-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 8px;
+        }
+
+        .results-header p {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-label {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .result-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            line-height: 1;
+        }
+
+        .result-breakdown {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-label {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .breakdown-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-white);
+        }
+
+        @media (max-width: 968px) {
+            .calculator-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-section,
+            .results-section {
+                padding: 32px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .result-value {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator-container">
+        <div class="form-section">
+            <div class="header">
+                <h1>Mortgage Calculator</h1>
+                <button class="clear-btn" onclick="clearAll()">Clear All</button>
+            </div>
+
+            <form id="mortgageForm">
+                <div class="form-group">
+                    <label for="amount">Mortgage Amount</label>
+                    <div class="input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input type="text" id="amount" placeholder="0" inputmode="decimal">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <div class="form-group">
+                        <label for="term">Mortgage Term</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="term" placeholder="0" min="0" max="50"
+                                style="padding-right: 70px;">
+                            <span class="unit-label">years</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rate">Interest Rate</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="rate" placeholder="0" min="0" max="100" step="0.01"
+                                style="padding-right: 50px;">
+                            <span class="unit-label">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Mortgage Type</label>
+                    <div class="radio-group">
+                        <div class="radio-option" onclick="selectRadio('repayment')">
+                            <input type="radio" id="repayment" name="mortgageType" value="repayment" checked>
+                            <label for="repayment">Repayment</label>
+                        </div>
+                        <div class="radio-option" onclick="selectRadio('interestOnly')">
+                            <input type="radio" id="interestOnly" name="mortgageType" value="interestOnly">
+                            <label for="interestOnly">Interest Only</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="calculate-btn" onclick="calculateMortgage()">
+                    Calculate Repayments
+                </button>
+            </form>
+        </div>
+
+        <div class="results-section">
+            <div class="results-empty" id="resultsEmpty">
+                <svg class="illustration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Calculator illustration -->
+                    <g transform="translate(60, 40)">
+                        <!-- Calculator body -->
+                        <rect x="10" y="10" width="70" height="90" rx="8" fill="#e8f4f4" stroke="#d8db2f"
+                            stroke-width="2" />
+
+                        <!-- Display -->
+                        <rect x="20" y="20" width="50" height="20" rx="4" fill="#1a3a3a" />
+                        <text x="45" y="35" text-anchor="middle" fill="#d8db2f" font-size="12"
+                            font-weight="bold">$$$</text>
+
+                        <!-- Calculator buttons -->
+                        <g transform="translate(20, 50)">
+                            <rect x="0" y="0" width="10" height="8" rx="2" fill="#d8db2f" />
+                            <rect x="15" y="0" width="10" height="8" rx="2" fill="#d8db2f" />
+                            <rect x="30" y="0" width="10" height="8" rx="2" fill="#d8db2f" />
+
+                            <rect x="0" y="12" width="10" height="8" rx="2" fill="#d8db2f" />
+                            <rect x="15" y="12" width="10" height="8" rx="2" fill="#d8db2f" />
+                            <rect x="30" y="12" width="10" height="8" rx="2" fill="#d8db2f" />
+                        </g>
+
+                        <!-- Money bills -->
+                        <rect x="55" y="30" width="30" height="20" rx="3" fill="#d8db2f" opacity="0.9"
+                            transform="rotate(15 70 40)" />
+                        <rect x="60" y="25" width="30" height="20" rx="3" fill="#d8db2f" opacity="0.8"
+                            transform="rotate(25 75 35)" />
+
+                        <!-- Coins -->
+                        <circle cx="25" cy="90" r="8" fill="#e8f4f4" stroke="#d8db2f" stroke-width="2" />
+                        <text x="25" y="95" text-anchor="middle" fill="#1a3a3a" font-size="10"
+                            font-weight="bold">$</text>
+
+                        <circle cx="65" cy="85" r="8" fill="#e8f4f4" stroke="#d8db2f" stroke-width="2" />
+                        <text x="65" y="90" text-anchor="middle" fill="#1a3a3a" font-size="10"
+                            font-weight="bold">$</text>
+                    </g>
+                </svg>
+
+                <h2>Results shown here</h2>
+                <p>Complete the form and click "calculate repayments" to see what your monthly repayments would be.</p>
+            </div>
+
+            <div class="results-content" id="resultsContent">
+                <div class="results-header">
+                    <h2>Your Results</h2>
+                    <p>Your results are shown below based on the information you provided.</p>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Your monthly repayments</div>
+                    <div class="result-value" id="monthlyPayment">$0.00</div>
+                </div>
+
+                <div class="result-breakdown">
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Total repayment over term</span>
+                        <span class="breakdown-value" id="totalRepayment">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Total interest</span>
+                        <span class="breakdown-value" id="totalInterest">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectRadio(id) {
+            const radioOptions = document.querySelectorAll('.radio-option');
+            radioOptions.forEach(option => option.classList.remove('selected'));
+
+            const selectedOption = document.querySelector(`#${id}`).closest('.radio-option');
+            selectedOption.classList.add('selected');
+
+            document.getElementById(id).checked = true;
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        function calculateMortgage() {
+            const amountStr = document.getElementById('amount').value;
+            const amount = parseFloat(amountStr.replace(/,/g, '')) || 0;
+            const term = parseFloat(document.getElementById('term').value) || 0;
+            const rate = parseFloat(document.getElementById('rate').value) || 0;
+            const type = document.querySelector('input[name="mortgageType"]:checked').value;
+
+            if (amount === 0 || term === 0 || rate === 0) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            let monthlyPayment, totalRepayment, totalInterest;
+            const monthlyRate = rate / 100 / 12;
+            const numberOfPayments = term * 12;
+
+            if (type === 'repayment') {
+                // Standard repayment mortgage calculation
+                monthlyPayment = amount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
+                    (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+                totalRepayment = monthlyPayment * numberOfPayments;
+                totalInterest = totalRepayment - amount;
+            } else {
+                // Interest only mortgage
+                monthlyPayment = amount * monthlyRate;
+                totalInterest = monthlyPayment * numberOfPayments;
+                totalRepayment = totalInterest + amount;
+            }
+
+            // Update the results
+            document.getElementById('monthlyPayment').textContent = formatCurrency(monthlyPayment);
+            document.getElementById('totalRepayment').textContent = formatCurrency(totalRepayment);
+            document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+
+            // Show results
+            document.getElementById('resultsEmpty').style.display = 'none';
+            document.getElementById('resultsContent').classList.add('show');
+        }
+
+        function clearAll() {
+            document.getElementById('mortgageForm').reset();
+            document.getElementById('amount').value = '';
+            document.getElementById('term').value = '';
+            document.getElementById('rate').value = '';
+            document.getElementById('repayment').checked = true;
+
+            const radioOptions = document.querySelectorAll('.radio-option');
+            radioOptions.forEach(option => option.classList.remove('selected'));
+            document.querySelector('#repayment').closest('.radio-option').classList.add('selected');
+
+            // Hide results
+            document.getElementById('resultsEmpty').style.display = 'flex';
+            document.getElementById('resultsContent').classList.remove('show');
+        }
+
+        // Initialize first radio as selected
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#repayment').closest('.radio-option').classList.add('selected');
+
+            // Add input event listener for amount formatting
+            const amountInput = document.getElementById('amount');
+            amountInput.addEventListener('input', function (e) {
+                // Remove existing commas and non-numeric characters (allow decimal point)
+                let value = e.target.value.replace(/[^\d.]/g, '');
+
+                // Check if the value is empty or not a number
+                if (value === '') {
+                    e.target.value = '';
+                    return;
+                }
+
+                // Handle decimal point - only allow one
+                const parts = value.split('.');
+                if (parts.length > 2) {
+                    value = parts[0] + '.' + parts.slice(1).join('');
+                }
+
+                // Format the integer part with commas
+                const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+                // Reconstruct the value
+                if (parts.length > 1) {
+                    e.target.value = `${integerPart}.${parts[1]}`;
+                } else {
+                    e.target.value = integerPart;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
